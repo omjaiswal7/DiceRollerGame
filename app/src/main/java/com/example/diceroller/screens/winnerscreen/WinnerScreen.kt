@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,7 +39,10 @@ import com.example.diceroller.ui.theme.DiceLightBlue
 fun WinnerScreen(winnerName: String, navController: NavHostController) {
 
     Column(
-       modifier = Modifier.fillMaxSize().padding(24.dp),
+       modifier = Modifier
+           .fillMaxSize()
+           .padding(24.dp)
+           .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -105,12 +110,12 @@ fun WinnerScreen(winnerName: String, navController: NavHostController) {
             )
         )
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(40.dp))
 
         Button(
             onClick = { navController.navigate(DiceRoutes.PlayersName){
                 // pay attention here
-                popUpTo(DiceRoutes.PlayersName) {
+                popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
             } },

@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -56,7 +59,7 @@ fun DiceGameScreen(
     var player01Score by rememberSaveable { mutableIntStateOf(0) }
     var player02Score by rememberSaveable { mutableIntStateOf(0) }
 
-    val playerTurn = (1..2).random()
+    val playerTurn = remember { (1..2).random() }
     var player01Turn by rememberSaveable { mutableStateOf(playerTurn == 1) }
 
     var diceValue by rememberSaveable { mutableIntStateOf(1) }
@@ -64,7 +67,10 @@ fun DiceGameScreen(
 
     val scope = rememberCoroutineScope()
 
-    val rotation = rememberSaveable { Animatable(0f) }
+// This won't crash, but won't save the angle if you rotate the phone mid-spin
+    val rotation = remember { Animatable(0f) }
+    // isko rememberSaveable karne se error aarha hai,
+
 
 
 
@@ -76,7 +82,8 @@ fun DiceGameScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp, vertical = 8.dp),
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // target score top card
@@ -106,8 +113,8 @@ fun DiceGameScreen(
 
             Spacer(Modifier.height(32.dp))
 
+            // Score Row
             Row {
-
                 // Player 01 score board card
                 Card(
                     modifier = Modifier.weight(1f),
@@ -189,7 +196,7 @@ fun DiceGameScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // rolling dice animation
+            // Dice card: rolling dice animation
             Card(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
@@ -223,10 +230,10 @@ fun DiceGameScreen(
                 color = Color.Gray
             )
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(32.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             ) {
                 // player01 roll button
                 Button(
