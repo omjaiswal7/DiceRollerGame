@@ -108,7 +108,12 @@ fun WinnerScreen(winnerName: String, navController: NavHostController) {
         Spacer(Modifier.weight(1f))
 
         Button(
-            onClick = { navController.navigate(DiceRoutes.PlayersName) },
+            onClick = { navController.navigate(DiceRoutes.PlayersName){
+                // pay attention here
+                popUpTo(DiceRoutes.PlayersName) {
+                    inclusive = true
+                }
+            } },
             modifier = Modifier
                 .fillMaxWidth(1f)
                 .padding(bottom = 32.dp)

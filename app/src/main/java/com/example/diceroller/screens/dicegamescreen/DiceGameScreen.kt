@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,13 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.diceroller.navigation.DiceImage
 import com.example.diceroller.navigation.DiceRoutes
-import com.example.diceroller.navigation.ScoreImage01
-import com.example.diceroller.navigation.ScoreImage02
-import com.example.diceroller.navigation.ScoreImage03
-import com.example.diceroller.navigation.ScoreImage04
-import com.example.diceroller.navigation.ScoreImage05
-import com.example.diceroller.navigation.ScoreImage06
 import com.example.diceroller.ui.theme.DiceDarkBlue
 import com.example.diceroller.ui.theme.DiceLightBlue
 import kotlinx.coroutines.delay
@@ -68,7 +64,7 @@ fun DiceGameScreen(
 
     val scope = rememberCoroutineScope()
 
-    val rotation = remember{ Animatable(0f) }
+    val rotation = remember { Animatable(0f) }
 
 
 
@@ -117,10 +113,10 @@ fun DiceGameScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if(player01Turn) DiceDarkBlue else Color.White
+                        containerColor = if (player01Turn) DiceDarkBlue else Color.White
                     ),
                     elevation = CardDefaults.cardElevation(
-                        defaultElevation = if(player01Turn) 6.dp else 4.dp
+                        defaultElevation = if (player01Turn) 6.dp else 4.dp
                     ),
                     border = BorderStroke(2.dp, DiceLightBlue)
                 ) {
@@ -134,13 +130,13 @@ fun DiceGameScreen(
                         Text(
                             text = player01Name,
                             fontWeight = FontWeight.Medium,
-                            color = if(player01Turn) Color.White else Color.DarkGray
+                            color = if (player01Turn) Color.White else Color.DarkGray
                         )
                         Text(
                             text = player01Score.toString(),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = if(player01Turn) Color.White else Color.Gray
+                            color = if (player01Turn) Color.White else Color.Gray
                         )
                     }
                 }
@@ -152,10 +148,10 @@ fun DiceGameScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if(!player01Turn) DiceDarkBlue else Color.White
+                        containerColor = if (!player01Turn) DiceDarkBlue else Color.White
                     ),
                     elevation = CardDefaults.cardElevation(
-                        defaultElevation = if(!player01Turn) 6.dp else 4.dp
+                        defaultElevation = if (!player01Turn) 6.dp else 4.dp
                     ),
                     border = BorderStroke(2.dp, DiceLightBlue)
                 ) {
@@ -168,13 +164,13 @@ fun DiceGameScreen(
                         Text(
                             text = player02Name,
                             fontWeight = FontWeight.Medium,
-                            color = if(!player01Turn) Color.White else Color.DarkGray
+                            color = if (!player01Turn) Color.White else Color.DarkGray
                         )
                         Text(
                             text = player02Score.toString(),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = if(!player01Turn) Color.White else Color.Gray
+                            color = if (!player01Turn) Color.White else Color.Gray
                         )
                     }
                 }
@@ -184,7 +180,7 @@ fun DiceGameScreen(
 
             // player turn
             Text(
-                text = if(player01Turn) "$player01Name's Turn" else "$player02Name's Turn",
+                text = if (player01Turn) "$player01Name's Turn" else "$player02Name's Turn",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
@@ -208,18 +204,15 @@ fun DiceGameScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 36.dp)
-                        .rotate(rotation.value),
+                        .padding(vertical = 36.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    when (diceValue) {
-                        1 -> ScoreImage01()
-                        2 -> ScoreImage02()
-                        3 -> ScoreImage03()
-                        4 -> ScoreImage04()
-                        5 -> ScoreImage05()
-                        else -> ScoreImage06()
-                    }
+                    DiceImage(
+                        value = diceValue,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .rotate(rotation.value) // Rotate the image directly
+                    )
                 }
             }
 
@@ -238,7 +231,7 @@ fun DiceGameScreen(
                 // player01 roll button
                 Button(
                     onClick = {
-                        if(!isRolling) {
+                        if (!isRolling) {
                             isRolling = true
                             scope.launch {
                                 repeat(5) {
@@ -254,9 +247,9 @@ fun DiceGameScreen(
                                 isRolling = false
                                 player01Turn = false
 
-                                if(diceValue == 6) player01Turn = true
+                                if (diceValue == 6) player01Turn = true
 
-                                if(player01Score >= targetScore) {
+                                if (player01Score >= targetScore) {
                                     navController.navigate(DiceRoutes.Winner(winnerName = player01Name))
                                     return@launch
                                 }
@@ -268,11 +261,11 @@ fun DiceGameScreen(
                     shape = CircleShape,
                     border = BorderStroke(2.dp, color = DiceLightBlue),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(player01Turn) DiceDarkBlue else Color.LightGray,
-                        contentColor = if(player01Turn) Color.White else Color.Gray
+                        containerColor = if (player01Turn) DiceDarkBlue else Color.LightGray,
+                        contentColor = if (player01Turn) Color.White else Color.Gray
                     ),
                     elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = if(player01Turn) 4.dp else 2.dp
+                        defaultElevation = if (player01Turn) 4.dp else 2.dp
                     )
                 ) {
                     Text(
@@ -287,9 +280,9 @@ fun DiceGameScreen(
                 // player02 roll button
                 Button(
                     onClick = {
-                        if(!isRolling) {
+                        if (!isRolling) {
                             isRolling = true
-                            scope.launch{
+                            scope.launch {
 
                                 repeat(5) {
                                     diceValue = (1..6).random()
@@ -304,9 +297,9 @@ fun DiceGameScreen(
                                 isRolling = false
                                 player01Turn = true
 
-                                if(diceValue == 6) player01Turn = false
+                                if (diceValue == 6) player01Turn = false
 
-                                if(player02Score >= targetScore) {
+                                if (player02Score >= targetScore) {
                                     navController.navigate(DiceRoutes.Winner(winnerName = player02Name))
                                     return@launch
                                 }
@@ -318,11 +311,11 @@ fun DiceGameScreen(
                     shape = CircleShape,
                     border = BorderStroke(2.dp, color = DiceLightBlue),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(!player01Turn) DiceDarkBlue else Color.LightGray,
-                        contentColor = if(!player01Turn) Color.White else Color.Gray
+                        containerColor = if (!player01Turn) DiceDarkBlue else Color.LightGray,
+                        contentColor = if (!player01Turn) Color.White else Color.Gray
                     ),
                     elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = if(!player01Turn) 4.dp else 2.dp
+                        defaultElevation = if (!player01Turn) 4.dp else 2.dp
                     )
                 ) {
                     Text(
@@ -334,8 +327,6 @@ fun DiceGameScreen(
             }
 
         }
-
-
 
 
     }

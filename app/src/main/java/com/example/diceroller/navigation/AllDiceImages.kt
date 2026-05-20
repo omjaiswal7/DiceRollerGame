@@ -2,59 +2,27 @@ package com.example.diceroller.navigation
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.diceroller.R
 
 @Composable
-fun ScoreImage01() {
+fun DiceImage(
+    value: Int,
+    modifier: Modifier = Modifier // Added modifier parameter
+) {
+    val res = when (value) {
+        1 -> R.drawable.dice_01
+        2 -> R.drawable.dice_02
+        3 -> R.drawable.dice_03
+        4 -> R.drawable.dice_04
+        5 -> R.drawable.dice_05
+        else -> R.drawable.dice_06
+    }
 
     Image(
-        painter = painterResource(R.drawable.dice_01), contentDescription = "1 Point"
+        painter = painterResource(res),
+        contentDescription = null,
+        modifier = modifier // Apply the modifier here
     )
-
-}
-
-@Composable
-fun ScoreImage02() {
-
-    Image(
-        painter = painterResource(R.drawable.dice_02), contentDescription = "2 Point"
-    )
-
-}
-
-@Composable
-fun ScoreImage03() {
-
-    Image(
-        painter = painterResource(R.drawable.dice_03), contentDescription = "3 Point"
-    )
-
-}
-
-@Composable
-fun ScoreImage04() {
-
-    Image(
-        painter = painterResource(R.drawable.dice_04), contentDescription = "4 Point"
-    )
-
-}
-
-@Composable
-fun ScoreImage05() {
-
-    Image(
-        painter = painterResource(R.drawable.dice_05), contentDescription = "5 Point"
-    )
-
-}
-
-@Composable
-fun ScoreImage06() {
-
-    Image(
-        painter = painterResource(R.drawable.dice_06), contentDescription = "6 Point"
-    )
-
 }
