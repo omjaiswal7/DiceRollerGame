@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +45,10 @@ import com.example.diceroller.ui.theme.DiceLightBlue
 @Composable
 fun PlayersNameScreen(navController: NavHostController) {
 
-    var player01 by remember { mutableStateOf("") }
-    var player02 by remember { mutableStateOf("") }
+    var player01 by rememberSaveable { mutableStateOf("") }
+    var player02 by rememberSaveable { mutableStateOf("") }
 
-    var selectedScore by remember { mutableIntStateOf(50) }
+    var selectedScore by rememberSaveable { mutableIntStateOf(50) }
 
     Column(
         modifier = Modifier

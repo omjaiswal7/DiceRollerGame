@@ -26,8 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,18 +53,18 @@ fun DiceGameScreen(
     navController: NavHostController
 ) {
 
-    var player01Score by remember { mutableIntStateOf(0) }
-    var player02Score by remember { mutableIntStateOf(0) }
+    var player01Score by rememberSaveable { mutableIntStateOf(0) }
+    var player02Score by rememberSaveable { mutableIntStateOf(0) }
 
     val playerTurn = (1..2).random()
-    var player01Turn by remember { mutableStateOf(playerTurn == 1) }
+    var player01Turn by rememberSaveable { mutableStateOf(playerTurn == 1) }
 
-    var diceValue by remember { mutableIntStateOf(1) }
-    var isRolling by remember { mutableStateOf(false) }
+    var diceValue by rememberSaveable { mutableIntStateOf(1) }
+    var isRolling by rememberSaveable { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
-    val rotation = remember { Animatable(0f) }
+    val rotation = rememberSaveable { Animatable(0f) }
 
 
 
