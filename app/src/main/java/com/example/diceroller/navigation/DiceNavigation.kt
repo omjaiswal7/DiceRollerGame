@@ -21,7 +21,17 @@ fun DiceNavigation() {
     ) {
 
         composable<DiceRoutes.PlayersName> {
-            PlayersNameScreen(navController)
+            PlayersNameScreen(
+                onStartGame = { p1, p2, score ->
+                    navController.navigate(
+                        DiceRoutes.DiceGame(
+                            player01 = p1,
+                            player02 = p2,
+                            targetScore = score
+                        )
+                    )
+
+            })
         }
 
         composable<DiceRoutes.DiceGame> { backStackEntry ->

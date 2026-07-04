@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,14 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -45,12 +49,15 @@ import com.example.diceroller.ui.theme.DiceLightBlue
 
 
 @Composable
-fun PlayersNameScreen(navController: NavHostController) {
+fun PlayersNameScreen(onStartGame: (String, String, Int) -> Unit) {
 
     var player01 by rememberSaveable { mutableStateOf("") }
     var player02 by rememberSaveable { mutableStateOf("") }
 
     var selectedScore by rememberSaveable { mutableIntStateOf(50) }
+
+    // FocusManager lets us manually move or hide the keyboard
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -119,6 +126,12 @@ fun PlayersNameScreen(navController: NavHostController) {
                 focusedLabelColor = DiceDarkBlue,
                 unfocusedLabelColor = Color.DarkGray,
                 cursorColor = DiceDarkBlue
+            ),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next // Shows "Next" button
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {focusManager.moveFocus(FocusDirection.Next)}
             )
         )
 
@@ -139,6 +152,12 @@ fun PlayersNameScreen(navController: NavHostController) {
                 focusedLabelColor = DiceDarkBlue,
                 unfocusedLabelColor = Color.DarkGray,
                 cursorColor = DiceDarkBlue
+            ),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus()}   // Hides the keyboard
             )
         )
 
@@ -219,13 +238,7 @@ fun PlayersNameScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                navController.navigate(
-                    DiceRoutes.DiceGame(
-                        player01 = player01,
-                        player02 = player02,
-                        targetScore = selectedScore
-                    )
-                )
+                onStartGame(player01, player02, selectedScore)
             },
             modifier = Modifier
                 .fillMaxWidth(1f)
