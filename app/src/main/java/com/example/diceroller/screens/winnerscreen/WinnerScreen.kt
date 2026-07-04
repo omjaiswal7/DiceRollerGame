@@ -29,26 +29,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.diceroller.R
-import com.example.diceroller.navigation.DiceRoutes
 import com.example.diceroller.ui.theme.DiceDarkBlue
 import com.example.diceroller.ui.theme.DiceLightBlue
 
 @Composable
-fun WinnerScreen(winnerName: String, navController: NavHostController) {
+fun WinnerScreen(winnerName: String, onRestartGame: () -> Unit) {
 
     Column(
-       modifier = Modifier
-           .fillMaxSize()
-           .padding(24.dp)
-           .verticalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         Card(
-            modifier = Modifier.fillMaxWidth(0.75f).padding(top = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.75f)
+                .padding(top = 24.dp),
             shape = CircleShape,
             colors = CardDefaults.cardColors(
                 containerColor = DiceDarkBlue,
@@ -58,7 +58,9 @@ fun WinnerScreen(winnerName: String, navController: NavHostController) {
         ) {
             Text(
                 text = "WINNER",
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp,vertical = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 12.dp),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp,
@@ -113,12 +115,7 @@ fun WinnerScreen(winnerName: String, navController: NavHostController) {
         Spacer(Modifier.height(40.dp))
 
         Button(
-            onClick = { navController.navigate(DiceRoutes.PlayersName){
-                // pay attention here
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-            } },
+            onClick = onRestartGame,
             modifier = Modifier
                 .fillMaxWidth(1f)
                 .padding(bottom = 32.dp)

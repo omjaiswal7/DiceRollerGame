@@ -31,7 +31,7 @@ fun DiceNavigation() {
                         )
                     )
 
-            })
+                })
         }
 
         composable<DiceRoutes.DiceGame> { backStackEntry ->
@@ -40,7 +40,12 @@ fun DiceNavigation() {
                 player01Name = args.player01,
                 player02Name = args.player02,
                 targetScore = args.targetScore,
-                navController = navController
+                onBackToPlayerScreen = {
+                    navController.popBackStack(DiceRoutes.PlayersName, inclusive = false)
+                },
+                onGameWinner = { winner ->
+                    navController.navigate(DiceRoutes.Winner(winnerName = winner))
+                }
             )
         }
 
@@ -48,7 +53,11 @@ fun DiceNavigation() {
             val args = backStackEntry.toRoute<DiceRoutes.Winner>()
             WinnerScreen(
                 winnerName = args.winnerName,
-                navController = navController
+                onRestartGame = {
+                    navController.navigate(DiceRoutes.PlayersName) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

@@ -40,9 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.diceroller.navigation.DiceImage
-import com.example.diceroller.navigation.DiceRoutes
 import com.example.diceroller.ui.theme.DiceDarkBlue
 import com.example.diceroller.ui.theme.DiceLightBlue
 import kotlinx.coroutines.delay
@@ -53,7 +51,8 @@ fun DiceGameScreen(
     player01Name: String,
     player02Name: String,
     targetScore: Int,
-    navController: NavHostController
+    onBackToPlayerScreen: () -> Unit,
+    onGameWinner: (String) -> Unit
 ) {
 
     var player01Score by rememberSaveable { mutableIntStateOf(0) }
@@ -72,10 +71,8 @@ fun DiceGameScreen(
     // isko rememberSaveable karne se error aarha hai,
 
 
-
-
     Scaffold(
-        topBar = { DiceGameTopBar(navController) }
+        topBar = { DiceGameTopBar(onNewGameClick = onBackToPlayerScreen) }
     ) { innerPadding ->
 
         Column(
@@ -233,7 +230,9 @@ fun DiceGameScreen(
             Spacer(Modifier.height(32.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
             ) {
                 // player01 roll button
                 Button(
@@ -257,7 +256,7 @@ fun DiceGameScreen(
                                 if (diceValue == 6) player01Turn = true
 
                                 if (player01Score >= targetScore) {
-                                    navController.navigate(DiceRoutes.Winner(winnerName = player01Name))
+                                    onGameWinner(player01Name)
                                     return@launch
                                 }
                             }
@@ -307,7 +306,7 @@ fun DiceGameScreen(
                                 if (diceValue == 6) player01Turn = false
 
                                 if (player02Score >= targetScore) {
-                                    navController.navigate(DiceRoutes.Winner(winnerName = player02Name))
+                                    onGameWinner(player02Name)
                                     return@launch
                                 }
                             }

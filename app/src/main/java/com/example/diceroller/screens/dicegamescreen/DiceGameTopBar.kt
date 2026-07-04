@@ -15,14 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.diceroller.navigation.DiceRoutes
 import com.example.diceroller.ui.theme.DiceDarkBlue
 import com.example.diceroller.ui.theme.DiceLightBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiceGameTopBar(navController: NavHostController) {
+fun DiceGameTopBar(onNewGameClick: () -> Unit) {
 
     TopAppBar(
         title = {
@@ -35,7 +33,7 @@ fun DiceGameTopBar(navController: NavHostController) {
         },
         actions = {
             Button(
-                onClick = { navController.navigate(DiceRoutes.PlayersName)},
+                onClick = onNewGameClick,
                 modifier = Modifier.padding(end = 12.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
