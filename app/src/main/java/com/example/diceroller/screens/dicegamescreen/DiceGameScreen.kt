@@ -27,10 +27,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.diceroller.navigation.DiceImage
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.diceroller.ui.components.DiceImage
+import com.example.diceroller.screens.dicegamescreen.DiceGameViewModel
 import com.example.diceroller.ui.theme.DiceDarkBlue
 import com.example.diceroller.ui.theme.DiceLightBlue
 import kotlinx.coroutines.delay
@@ -52,23 +52,53 @@ fun DiceGameScreen(
     player02Name: String,
     targetScore: Int,
     onBackToPlayerScreen: () -> Unit,
-    onGameWinner: (String) -> Unit
+    onGameWinner: (String) -> Unit,
+    viewModel: DiceGameViewModel = viewModel()
 ) {
 
-    var player01Score by rememberSaveable { mutableIntStateOf(0) }
-    var player02Score by rememberSaveable { mutableIntStateOf(0) }
+    val player01Score = viewModel.player01Score
+    val player02Score = viewModel.player02Score
 
-    val playerTurn = remember { (1..2).random() }
-    var player01Turn by rememberSaveable { mutableStateOf(playerTurn == 1) }
-
-    var diceValue by rememberSaveable { mutableIntStateOf(1) }
-    var isRolling by rememberSaveable { mutableStateOf(false) }
+    val player01Turn = viewModel.player01Turn
+    val diceValue = viewModel.diceValue
+    val isRolling = viewModel.isRolling
 
     val scope = rememberCoroutineScope()
 
 // This won't crash, but won't save the angle if you rotate the phone mid-spin
     val rotation = remember { Animatable(0f) }
     // isko rememberSaveable karne se error aarha hai,
+
+    var animationDiceImage by remember { mutableIntStateOf(diceValue) }
+
+    // Helper function to avoid duplicating code for P1 and P2
+    val performRoll: () -> Unit = {
+        // IMPORTANT: Check isRolling HERE before launching the animation
+        if (!isRolling) {
+            scope.launch {
+//                Step 1: Lock the gate immediately
+                viewModel.startRolling()
+
+                // 2. Visual Animation
+                repeat(10) {
+                    animationDiceImage = (1..6).random()
+                    rotation.snapTo(0f)
+                    rotation.animateTo(180f, tween(50))
+                    delay(40)
+                }
+                // 3. Business Logic, and UNLOCKS the gate
+                // This adds the score and then sets isRolling back to false
+                viewModel.rollDice(
+                    targetScore = targetScore,
+                    onGameWinner = onGameWinner,
+                    player01Name = player01Name,
+                    player02Name = player02Name
+                )
+                // 3. Sync visual with actual result
+                animationDiceImage = viewModel.diceValue
+            }
+        }
+    }
 
 
     Scaffold(
@@ -212,7 +242,7 @@ fun DiceGameScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     DiceImage(
-                        value = diceValue,
+                        value = animationDiceImage,
                         modifier = Modifier
                             .size(200.dp)
                             .rotate(rotation.value) // Rotate the image directly
@@ -235,105 +265,56 @@ fun DiceGameScreen(
                     .padding(bottom = 12.dp)
             ) {
                 // player01 roll button
-                Button(
-                    onClick = {
-                        if (!isRolling) {
-                            isRolling = true
-                            scope.launch {
-                                repeat(5) {
-                                    diceValue = (1..6).random()
-                                    rotation.snapTo(0f)
-                                    rotation.animateTo(180f, tween(50))
-                                    delay(40)
-                                }
-
-                                diceValue = (1..6).random()
-                                player01Score += diceValue
-
-                                isRolling = false
-                                player01Turn = false
-
-                                if (diceValue == 6) player01Turn = true
-
-                                if (player01Score >= targetScore) {
-                                    onGameWinner(player01Name)
-                                    return@launch
-                                }
-                            }
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = player01Turn,
-                    shape = CircleShape,
-                    border = BorderStroke(2.dp, color = DiceLightBlue),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (player01Turn) DiceDarkBlue else Color.LightGray,
-                        contentColor = if (player01Turn) Color.White else Color.Gray
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = if (player01Turn) 4.dp else 2.dp
-                    )
-                ) {
-                    Text(
-                        text = "P1: Roll",
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
+                RollButton(
+                    text = "P1: Roll",
+                    isEnabled = !isRolling && player01Turn,
+                    isTurn = player01Turn,
+                    onClick = performRoll,
+                    modifier = Modifier.weight(1f)
+                )
 
                 Spacer(Modifier.width(8.dp))
 
                 // player02 roll button
-                Button(
-                    onClick = {
-                        if (!isRolling) {
-                            isRolling = true
-                            scope.launch {
-
-                                repeat(5) {
-                                    diceValue = (1..6).random()
-                                    rotation.snapTo(0f)
-                                    rotation.animateTo(180f, tween(50))
-                                    delay(40)
-                                }
-
-                                diceValue = (1..6).random()
-                                player02Score += diceValue
-
-                                isRolling = false
-                                player01Turn = true
-
-                                if (diceValue == 6) player01Turn = false
-
-                                if (player02Score >= targetScore) {
-                                    onGameWinner(player02Name)
-                                    return@launch
-                                }
-                            }
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = !player01Turn,
-                    shape = CircleShape,
-                    border = BorderStroke(2.dp, color = DiceLightBlue),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (!player01Turn) DiceDarkBlue else Color.LightGray,
-                        contentColor = if (!player01Turn) Color.White else Color.Gray
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = if (!player01Turn) 4.dp else 2.dp
-                    )
-                ) {
-                    Text(
-                        text = "P2: Roll",
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
+                RollButton(
+                    text = "P2: Roll",
+                    isEnabled = !isRolling && !player01Turn,
+                    isTurn = !player01Turn,
+                    onClick = performRoll,
+                    modifier = Modifier.weight(1f)
+                )
             }
 
         }
+    }
+}
 
-
+@Composable
+fun RollButton(
+    text: String,
+    isEnabled: Boolean,
+    isTurn: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = isEnabled,
+        shape = CircleShape,
+        border = BorderStroke(2.dp, color = DiceLightBlue),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isTurn) DiceDarkBlue else MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = if (isTurn) Color.White else Color.Gray
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = if (isTurn) 4.dp else 2.dp
+        )
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
     }
 }

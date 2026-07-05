@@ -1,4 +1,4 @@
-package com.example.diceroller.navigation
+package com.example.diceroller.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
