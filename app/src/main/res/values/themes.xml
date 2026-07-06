@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.DiceRoller" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground"> @android:color/white </item>
+        <item name="windowSplashScreenAnimatedIcon"> @drawable/dice_logo </item>
+        <item name="postSplashScreenTheme"> @style/Theme.DiceRoller </item>
+    </style>
+
 </resources>

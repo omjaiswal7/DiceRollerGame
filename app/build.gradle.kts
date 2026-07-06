@@ -58,4 +58,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.8")
     // JSON serialization library, works with the Kotlin serialization plugin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    // for splash screen
+    implementation("androidx.core:core-splashscreen:1.2.0")
 }
